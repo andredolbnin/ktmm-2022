@@ -1,11 +1,9 @@
 def find(arr):
-    d = {}
+    l = []
     for item in arr:
-        if item in d.keys():
-            d[item] += 1
-        else:
-            d[item] = 1
-    return len(d)
+        if item not in l:
+            l.append(item)
+    return len(l)
         
-arr = ['a', 'b', 'a', 'c', 'C']
+arr = ['a', 'b', 'a', 'c', 'C', 'c']
 print(find(arr))
