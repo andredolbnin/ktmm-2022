@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.integrate import odeint
 
+
 class OdeintSolver:
+    
     def __init__(self, t, m, N, c, M, r0, v0, iters_num):
         self.t = t
         self.m = m
@@ -11,8 +13,8 @@ class OdeintSolver:
         self.r0 = r0
         self.v0 = v0
         self.iters_num = iters_num
-
         self.G = 6.6743 * pow(10, -11)
+        
 
     def acceleration(self, r):
         a = []
@@ -25,6 +27,7 @@ class OdeintSolver:
             tmp += self.G * self.M * (self.c - r[i:i+2]) / np.linalg.norm(self.c - r[i:i+2]) ** 3
             a.append(tmp)
         return np.ndarray.flatten(np.array(a, dtype = np.float64))
+    
 
     def sys_of_funcs(self, r_v, t):
         res = np.zeros(r_v.shape)
@@ -34,12 +37,13 @@ class OdeintSolver:
         res[mid_idx:] = self.acceleration(r)
         res[:mid_idx] = v
         return res
+    
 
     def solve(self):
         t = np.arange(0, self.t * self.iters_num, self.t)
         # odeint не работает с двумерными векторами [x, y], поэтому нужен flatten
         sol_with_v = odeint(self.sys_of_funcs, np.ndarray.flatten(np.concatenate((self.r0, self.v0))), t)
-        sol = sol_with_v[:, :8] # выкидываем часть со скоростями, shape = (iters_num, 8)
+        sol = sol_with_v[:, :self.N * 2] # выкидываем часть со скоростями, shape = (iters_num, 8)
         R = np.zeros((self.iters_num, self.N, 2), dtype = np.float64)
         R[0] = self.r0
         for i in range(len(sol) - 1):
